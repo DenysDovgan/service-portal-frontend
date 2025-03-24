@@ -5,6 +5,8 @@ import { useAuthStore } from '@/stores/auth'
 import { Role } from '@/types/models'
 import type { User } from '@/types/models'
 
+import logo from '@/assets/logo.svg'
+
 const email = ref('')
 const password = ref('')
 const router = useRouter()
@@ -21,14 +23,17 @@ const handleLogin = () => {
   }
 
   auth.login('fake-jwt-token', fakeUser)
-  router.push('/dashboard')
+  router.push('/')
 }
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-sm">
-      <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+  <div class="flex items-center justify-center min-h-screen p-6 bg-gray-100">
+    <div class="bg-white p-8 rounded shadow-md w-96">
+
+      <div class="flex justify-center mb-6">
+        <img :src="logo" alt="Logo" class="w-50 text-center"/>
+      </div>
 
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
