@@ -1,0 +1,23 @@
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+
+const { user } = useAuthStore()
+</script>
+
+<template>
+  <div class="p-6">
+    <h1 class="text-2xl font-semibold mb-4">Welcome, {{ user.name }} 👋</h1>
+
+    <div class="bg-white p-6 rounded shadow">
+      <p class="text-gray-600">
+        This is your dashboard. Here you'll see different content based on your role:
+      </p>
+
+      <ul class="list-disc pl-6 mt-4 text-sm text-gray-700 space-y-1">
+        <li v-if="user.role === 'CLIENT'">Your submitted issues + create new issue</li>
+        <li v-else-if="user.role === 'TECHNICIAN'">Issues assigned to you</li>
+        <li v-else>All issues in the system (filterable)</li>
+      </ul>
+    </div>
+  </div>
+</template>
