@@ -1,31 +1,5 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useAuth } from '#imports'
-
+<script lang="ts" setup>
 import logo from '~/assets/logo.svg'
-
-const { signIn } = useAuth()
-
-const email = ref('');
-const password = ref('');
-
-const error = ref('');
-
-const handleLogin = async () => {
-  const credentials = { email: email.value, password: password.value }
-
-  try {
-    await signIn(credentials, {
-      redirect: false, // Prevents automatic redirection
-    });
-  } catch (err) {
-    error.value = err.message || 'Login failed. Please try again.';
-  }
-
-};
-
-const route = useRoute()
-const errorCode = computed(() => route.query.error)
 
 definePageMeta({
   auth: {
@@ -33,6 +7,57 @@ definePageMeta({
     navigateAuthenticatedTo: '/dashboard'
   }
 })
+
+interface AuthError extends Error {
+  statusCode?: number
+  message: string
+}
+
+const { signIn } = useAuth()
+
+const loginError = ref<string>('')
+const email = ref<string>('')
+const password = ref<string>('')
+
+async function handleLogin(): Promise<void> {
+  loginError.value = ''
+
+  const credentials = { email: email.value, password: password.value }
+
+  try {
+    const result = await signIn(credentials, {
+      redirect: false
+    })
+
+    if (result?.error) {
+      throw new Error(result.error)
+    }
+
+    // Optional: Redirect on success
+    await navigateTo('/dashboard')
+  } catch (error: unknown) {
+    loginError.value = formatAuthError(error)
+  }
+}
+
+function formatAuthError(error: unknown): string {
+  // Type guard for AuthError
+  if (typeof error === 'object' && error !== null) {
+    const authError = error as AuthError
+
+    // Customize based on your API's error responses
+    // todo: 403 -> 401
+    if (authError.statusCode === 403) {
+      return 'Invalid email or password'
+    }
+    if (authError.message.includes('CredentialsSignin')) {
+      return 'Authentication failed'
+    }
+    return 'Login failed. Please try again.'
+  }
+
+  return 'An unexpected error occurred'
+}
 </script>
 
 <template>
@@ -47,7 +72,7 @@ definePageMeta({
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">Email</label>
           <input
-              v-model="credentials.email"
+              v-model="email"
               type="email"
               placeholder="E-mail"
               class="w-full border border-gray-300 p-2 rounded"
@@ -58,7 +83,7 @@ definePageMeta({
         <div class="mb-6">
           <label class="block text-sm font-medium mb-1">Password</label>
           <input
-              v-model="credentials.password"
+              v-model="password"
               type="password"
               placeholder="Password"
               class="w-full border border-gray-300 p-2 rounded"
@@ -66,13 +91,18 @@ definePageMeta({
           />
         </div>
 
-        <p v-if="errorCode" class="text-red-500 text-sm mt-2">{{ errorCode }}</p>
+        <div
+            v-if="loginError"
+            class="error-message text-center mx-auto p-3 mb-4 max-w-md"
+        >
+          <p class="font-medium text-red-500">{{ loginError }}</p>
+        </div>
 
         <button
             type="submit"
             class="duration-200 w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-400"
         >
-          Login
+          Sign In
         </button>
       </form>
 
