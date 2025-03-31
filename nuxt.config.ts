@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   css: ['~/assets/main.css'],
   vite: {
       plugins: [
@@ -15,19 +15,17 @@ export default defineNuxtConfig({
       '@nuxt/image',
       '@sidebase/nuxt-auth'
   ],
-  runtimeConfig: {
-    baseURL: 'http://localhost:8000/api',
-  },
   auth: {
     isEnabled: true,
-    originEnvKey: 'NUXT_AUTH_ORIGIN',
+    originEnvKey: 'NUXT_BASE_URL',
+    globalAppMiddleware: true,
     provider: {
       type: 'local',
       endpoints: {
-        signIn: { path: '/auth/login', method: 'post' },
+        signIn: { path: '/api/auth/login', method: 'post' },
         signUp: false,
         signOut: false,
-        getSession: { path: '/user/me', method: 'get' },
+        getSession: { path: '/api/users/me', method: 'get' },
       },
       token: {
         signInResponseTokenPointer: '/data/token',
@@ -40,12 +38,26 @@ export default defineNuxtConfig({
         secureCookieAttribute: false,
         httpOnlyCookieAttribute: false
       },
+      session: {
+        dataType: {
+          id: 'string | number',
+          email: 'string',
+          phoneNumber: 'string',
+          firstName: 'string',
+          lastName: 'string',
+          city: 'string',
+          country: 'string',
+          companyName: 'string',
+          role: 'string',
+        },
+        dataResponsePointer: '/data'
+      },
       pages: {
         login: '/login'
       }
     },
     sessionRefresh: {
-      enablePeriodically: true,
+      enablePeriodically: 600000, // 10 minutes
     }
   }
 
