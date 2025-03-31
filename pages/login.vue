@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import logo from '~/assets/logo.svg'
 
+useHead({
+  title: 'Login'
+})
+
 definePageMeta({
   auth: {
     unauthenticatedOnly: true,
