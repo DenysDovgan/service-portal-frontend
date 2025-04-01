@@ -7,8 +7,6 @@ useHead({
 const { data } = useAuth()
 const userName = computed(() => data.value?.firstName)
 
-const { insights, loading, error } = await useInsights()
-
 </script>
 
 <template>
@@ -18,9 +16,7 @@ const { insights, loading, error } = await useInsights()
     <div class="bg-white p-6 rounded shadow">
 
       <div class="space-y-6">
-        <DashboardInsightsGrid v-if="insights" :insights="insights" />
-        <p v-else-if="loading">Loading...</p>
-        <p v-else-if="error">Failed to load insights.</p>
+        <DashboardInsightsGrid />
       </div>
 
     </div>

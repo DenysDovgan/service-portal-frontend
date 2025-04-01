@@ -1,61 +1,82 @@
-/*
-export const useInsights = async () => {
-    const { data, error, pending } = await useFetch('/api/insights')
+import type { InsightsResponse } from '~/types/insights'
 
-    return {
-        insights: data,
-        loading: pending,
-        error,
-    }
-}
-*/
-export const useInsights = async () => {
-    const userRole = useAuth().data.value?.role
+export const useInsights = () => {
+    const config = useRuntimeConfig()
+    const insights = ref<InsightsResponse | null>(null)
+    const pending = ref(false)
+    const error = ref<Error | null>(null)
 
-    const mockData = computed(() => {
-        switch (userRole) {
-            case 'ADMIN':
-                return {
-                    totalIssues: 128,
-                    openIssues: 37,
-                    inProgressIssues: 24,
-                    clients: 22,
-                    technicians: 6,
-                }
-            case 'SERVICE_MANAGER':
-                return {
-                    totalIssues: 128,
-                    openIssues: 37,
-                    inProgressIssues: 24,
-                    myIssues: 9,
-                    clients: 22,
-                    technicians: 6,
-                }
+    const { token, getSession, data: session } = useAuth()
+    const role = computed(() => session.value?.role ?? null)
 
-            case 'TECHNICIAN':
-                return {
-                    myOpenIssues: 5,
-                    myInProgressIssues: 3,
-                    activeClient: 1,
-                    totalAssigned: 14,
-                }
-
-            case 'CLIENT':
-                return {
-                    myOpenIssues: 2,
-                    myInProgressIssues: 1,
-                    myDoneIssues: 7,
-                    totalIssues: 10,
-                }
-
-            default:
-                return {}
+    const fetchInsights = async () => {
+        if (!token.value) {
+            console.warn('[INSIGHTS] Token not ready. Skipping fetch.')
+            return
         }
+
+        pending.value = true
+        error.value = null
+
+        try {
+            const { data } = await useFetch<{
+                status: string
+                message: string
+                data: InsightsResponse
+            }>('/insights', {
+                baseURL: config.public.apiBaseUrl,
+                headers: {
+                    Authorization: `${token.value}`
+                }
+            })
+
+            insights.value = data.value?.data ?? null
+        } catch (err) {
+            error.value = err as Error
+            console.error('Failed to fetch insights:', err)
+        } finally {
+            pending.value = false
+        }
+    }
+
+    // Trigger fetch only when token becomes available
+    if (process.client) {
+        watch(
+            token,
+            (val) => {
+                if (val) fetchInsights()
+            },
+            { immediate: !!token.value }
+        )
+    }
+
+    const filteredInsights = computed(() => {
+        if (!insights.value || !role.value) return null
+
+        const result: Partial<InsightsResponse> = {}
+
+        Object.entries(insights.value).forEach(([key, value]) => {
+            if (
+                key.startsWith('total') ||
+                key.startsWith('open') ||
+                key.startsWith('closed') ||
+                key.startsWith('resolved')
+            ) {
+                result[key as keyof InsightsResponse] = value
+            } else if (key.startsWith('staff') && role.value !== 'CLIENT') {
+                result[key as keyof InsightsResponse] = value
+            } else if (key.startsWith('client') && role.value === 'CLIENT') {
+                result[key as keyof InsightsResponse] = value
+            }
+        })
+
+        return result
     })
 
     return {
-        insights: mockData,
-        loading: ref(false),
-        error: ref(null),
+        insights: filteredInsights,
+        pending,
+        error,
+        refresh: fetchInsights
     }
 }

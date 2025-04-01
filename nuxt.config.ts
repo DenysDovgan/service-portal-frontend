@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import {process} from "std-env";
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -15,6 +16,11 @@ export default defineNuxtConfig({
       '@nuxt/image',
       '@sidebase/nuxt-auth'
   ],
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api'
+    }
+  },
   routeRules: {
     '/': { redirect: '/login' }
   },

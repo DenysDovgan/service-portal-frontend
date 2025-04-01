@@ -19,6 +19,11 @@ const filteredLinks = computed(() => {
     return !link.roles || (userRole.value && link.roles.includes(userRole.value))
   })
 })
+
+const handleLogout = async () => {
+  await signOut({ redirect: false })
+  await navigateTo('/login')
+}
 </script>
 
 <template>
@@ -42,7 +47,7 @@ const filteredLinks = computed(() => {
       <hr class="border-gray-200 mb-4" />
 
       <button
-          @click="signOut"
+          @click="handleLogout"
           class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition text-sm w-full"
       >
         Log Out
