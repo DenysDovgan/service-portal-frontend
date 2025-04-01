@@ -1,3 +1,4 @@
+/*
 // composables/useApi.ts
 import type { UseFetchOptions } from '#app'
 
@@ -49,3 +50,4 @@ export const useApi = () => {
         }
     }
 }
+*/

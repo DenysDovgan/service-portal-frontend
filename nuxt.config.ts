@@ -68,6 +68,6 @@ export default defineNuxtConfig({
     sessionRefresh: {
       enablePeriodically: 600000, // 10 minutes
     }
-  }
+  },
 
 })

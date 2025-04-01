@@ -1,4 +1,5 @@
 import type { InsightsResponse } from '~/types/insights'
+import {process} from "std-env";
 
 export const useInsights = () => {
     const config = useRuntimeConfig()
@@ -6,7 +7,7 @@ export const useInsights = () => {
     const pending = ref(false)
     const error = ref<Error | null>(null)
 
-    const { token, getSession, data: session } = useAuth()
+    const { token, data: session } = useAuth()
     const role = computed(() => session.value?.role ?? null)
 
     const fetchInsights = async () => {
@@ -19,7 +20,7 @@ export const useInsights = () => {
         error.value = null
 
         try {
-            const { data } = await useFetch<{
+            const { data: response } = await useFetch<{
                 status: string
                 message: string
                 data: InsightsResponse
@@ -30,7 +31,7 @@ export const useInsights = () => {
                 }
             })
 
-            insights.value = data.value?.data ?? null
+            insights.value = response.value?.data ?? null
         } catch (err) {
             error.value = err as Error
             console.error('Failed to fetch insights:', err)
@@ -51,23 +52,12 @@ export const useInsights = () => {
     }
 
     const filteredInsights = computed(() => {
-        if (!insights.value || !role.value) return null
+        if (!insights.value) return null
 
         const result: Partial<InsightsResponse> = {}
 
         Object.entries(insights.value).forEach(([key, value]) => {
-            if (
-                key.startsWith('total') ||
-                key.startsWith('open') ||
-                key.startsWith('closed') ||
-                key.startsWith('resolved')
-            ) {
-                result[key as keyof InsightsResponse] = value
-            } else if (key.startsWith('staff') && role.value !== 'CLIENT') {
-                result[key as keyof InsightsResponse] = value
-            } else if (key.startsWith('client') && role.value === 'CLIENT') {
-                result[key as keyof InsightsResponse] = value
-            }
+            result[key as keyof InsightsResponse] = value
         })
 
         return result
