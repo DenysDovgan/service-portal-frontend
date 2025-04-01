@@ -15,6 +15,9 @@ export default defineNuxtConfig({
       '@nuxt/image',
       '@sidebase/nuxt-auth'
   ],
+  routeRules: {
+    '/': { redirect: '/login' }
+  },
   auth: {
     isEnabled: true,
     originEnvKey: 'NUXT_BASE_URL',

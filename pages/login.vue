@@ -6,6 +6,7 @@ useHead({
 })
 
 definePageMeta({
+  layout: 'empty',
   auth: {
     unauthenticatedOnly: true,
     navigateAuthenticatedTo: '/dashboard'
@@ -37,7 +38,7 @@ async function handleLogin(): Promise<void> {
       throw new Error(result.error)
     }
 
-    // Optional: Redirect on success
+    // Redirect on success
     await navigateTo('/dashboard')
   } catch (error: unknown) {
     loginError.value = formatAuthError(error)
@@ -113,7 +114,3 @@ function formatAuthError(error: unknown): string {
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
