@@ -1,26 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import type { UserDto } from '~/types/user'
-import type { Role } from "~/constants/role";
+import type { Role } from "~/types/role";
 
 const { token, data: session } = useAuth()
-
 const config = useRuntimeConfig()
 
+// input params
 const props = defineProps<{
   role: Role
 }>()
 
+// filter body
 const filters = ref({
   role: props.role,
   name: '',
   email: '',
   company: '',
-})
-
-const state = reactive({
-  email: undefined,
-  password: undefined
 })
 
 // todo: move fetch logic to useUsers
@@ -56,13 +52,28 @@ const fetchUsers = async () => {
   }
 }
 
-watch(filters, fetchUsers, { deep: true, immediate: true })
+onMounted(() => {
+  fetchUsers()
+})
 </script>
 
 <template>
   <div class="space-y-6">
+
+    <USlideover>
+      <UButton>
+        Add {{props.role}}
+      </UButton>
+
+      <template #content>
+        <h2 class="text-lg font-semibold">Create New User</h2>
+        <AddUserForm />
+      </template>
+    </USlideover>
+
+<!--    Filter fields-->
     <div class="bg-white p-4 rounded shadow">
-      <UForm :state="state" class="space-y-4 grid grid-cols-3" @submit="onSubmit">
+      <div class="mx-4 space-y-4 flex flex-row justify-between items-center">
         <UFormField label="Name">
           <UInput v-model="filters.name" placeholder="Search by name" />
         </UFormField>
@@ -74,12 +85,16 @@ watch(filters, fetchUsers, { deep: true, immediate: true })
         <UFormField label="Company">
           <UInput v-model="filters.company" placeholder="Company" />
         </UFormField>
-      </UForm>
+
+        <UButton label="Search" @click="fetchUsers" />
+      </div>
     </div>
 
+<!--    Fetching Status-->
     <div v-if="pending" class="text-gray-500">Loading users...</div>
     <div v-else-if="error" class="text-red-500">Failed to load users.</div>
 
+<!--    Fetched users list-->
     <div v-else class="gap-4 space-y-4">
       <div
           v-for="user in users"
@@ -96,6 +111,7 @@ watch(filters, fetchUsers, { deep: true, immediate: true })
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>

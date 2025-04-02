@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { Role } from '~/types/role';
+
+// Title
 useHead({ title: 'Clients' })
-import { Role } from '~/constants/role';
 
+// Authentication
+const hasAccess = useHasRole([Role.ADMIN, Role.SERVICE_MANAGER])
 
+if (!hasAccess.value) {
+  await navigateTo('/unauthorized')
+}
+
+// Heading
 const layoutState = useLayoutState()
 layoutState.value.heading = 'Clients'
 </script>

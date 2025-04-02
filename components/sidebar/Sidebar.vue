@@ -1,6 +1,6 @@
 <script setup>
 import logo from '~/assets/logo.svg'
-import { Role } from '~/constants/role.js'
+import { Role } from '~/types/role.ts'
 
 const { data, signOut } = useAuth()
 const userRole = computed(() => data.value?.role)
