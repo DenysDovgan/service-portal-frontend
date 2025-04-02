@@ -1,2 +1,29 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+:root {
+    --ui-bg: white;
+    --ui-text-highlighted: #111827; /* gray-900 */
+    --ui-text-dimmed: #9CA3AF; /* gray-400 */
+    --ui-border-accented: #D1D5DB; /* gray-300 */
+}
+
+::selection {
+    background-color: #f97316;
+    color: #ffffff;
+}
+
+@theme {
+    --color-orange: oklch(64.713% 0.21733 36.851);
+    --color-orange-50: oklch(87.137% 0.0732 43.93);
+    --color-orange-100: oklch(84.145% 0.09301 44.54);
+    --color-orange-200: oklch(78.372% 0.13314 43.691);
+    --color-orange-300: oklch(73.273% 0.1715 42.131);
+    --color-orange-400: oklch(69.174% 0.20429 39.947);
+    --color-orange-500: oklch(64.713% 0.21733 36.851);
+    --color-orange-600: oklch(53.444% 0.17742 37.366);
+    --color-orange-700: oklch(41.671% 0.1342 38.761);
+    --color-orange-800: oklch(28.899% 0.08799 41.533);
+    --color-orange-900: oklch(14.54% 0.03555 56.076);
+    --color-orange-950: oklch(0% 0 none);
+}

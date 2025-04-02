@@ -8,9 +8,9 @@ const userRole = computed(() => data.value?.role)
 const links = [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'My Account', to: '/account' },
-  { label: 'Add Client', to: '/clients/add', roles: [Role.TECHNICIAN, Role.SERVICE_MANAGER, Role.ADMIN] },
-  { label: 'Clients', to: '/clients', roles: [Role.SERVICE_MANAGER, Role.ADMIN] },
-  { label: 'Technicians', to: '/technicians', roles: [Role.SERVICE_MANAGER, Role.ADMIN] },
+  { label: 'Admins', to: '/users/admins', roles: [Role.ADMIN] },
+  { label: 'Technicians', to: '/users/technicians', roles: [Role.SERVICE_MANAGER, Role.ADMIN] },
+  { label: 'Clients', to: '/users/clients', roles: [Role.TECHNICIAN, Role.SERVICE_MANAGER, Role.ADMIN] },
 ]
 
 const filteredLinks = computed(() => {
