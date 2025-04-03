@@ -2,14 +2,19 @@
 import { ref } from 'vue'
 import type { UserDto } from '~/types/user'
 import type { Role } from "~/types/role";
+import { formatRole, formatCapitalize } from "~/utils/format";
 
 const { token, data: session } = useAuth()
 const config = useRuntimeConfig()
+
+const slideoverOpen = ref(false)
 
 // input params
 const props = defineProps<{
   role: Role
 }>()
+
+const formatedRole = formatRole(props.role)
 
 // filter body
 const filters = ref({
@@ -44,12 +49,16 @@ const fetchUsers = async () => {
     })
 
     users.value = response.value?.data || []
-    console.log(users.value)
   } catch (err) {
     error.value = err as Error
   } finally {
     pending.value = false
   }
+}
+
+const successUserAddTrigger = () => {
+  fetchUsers()
+  slideoverOpen.value = !slideoverOpen.value
 }
 
 onMounted(() => {
@@ -60,14 +69,17 @@ onMounted(() => {
 <template>
   <div class="space-y-6">
 
-    <USlideover>
-      <UButton>
-        Add {{props.role}}
+    <USlideover v-model:open="slideoverOpen">
+      <UButton variant="outline">
+        Add {{ formatedRole }}
       </UButton>
 
-      <template #content>
-        <h2 class="text-lg font-semibold">Create New User</h2>
-        <AddUserForm />
+      <template #header>
+        <h2 class="text-xl font-semibold text-black">Add New {{ formatedRole }}</h2>
+      </template>
+
+      <template #body>
+        <UsersAddForm :role="props.role" @success="fetchUsers" />
       </template>
     </USlideover>
 
@@ -102,11 +114,11 @@ onMounted(() => {
           class="p-4 bg-white rounded shadow flex flex-col gap-2"
       >
         <p class="text-lg font-semibold text-gray-800">
-          {{ user.firstName }} {{ user.lastName }}
+          {{ formatCapitalize(user.firstName) }} {{ formatCapitalize(user.lastName) }}
         </p>
         <p class="text-sm text-gray-500">{{ user.email }}</p>
         <p class="text-sm text-gray-500">{{ user.phoneNumber }}</p>
-        <p class="text-sm text-gray-500">{{ user.city }}, {{ user.country }}</p>
+        <p class="text-sm text-gray-500">{{ formatCapitalize(user.city) }}, {{ formatCapitalize(user.country) }}</p>
         <p class="text-sm text-gray-500">Company: {{ user.companyName }}</p>
       </div>
     </div>

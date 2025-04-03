@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {useLayoutState} from "~/composables/useLayoutState";
+
 const layoutState = useLayoutState()
 </script>
 

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Role } from '~/types/role';
+import {useHasRole} from "~/composables/useHasRole";
+
 
 // Title
 useHead({ title: 'Clients' })
