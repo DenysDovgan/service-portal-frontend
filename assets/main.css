@@ -3,6 +3,7 @@
 
 :root {
     --ui-bg: white;
+    --ui-text: #111827;
     --ui-text-highlighted: #111827; /* gray-900 */
     --ui-text-dimmed: #9CA3AF; /* gray-400 */
     --ui-border-accented: #D1D5DB; /* gray-300 */
